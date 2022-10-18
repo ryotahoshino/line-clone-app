@@ -1,33 +1,35 @@
-import React, { useEffect, useState } from 'react'
-import SignOut from './SignOut'
-import {db} from '../firebase.js';
+import React, { useEffect, useState } from 'react';
+import SignOut from './SignOut';
+import {auth, db} from '../firebase.js';
+import SendMessage from './SendMessage';
 
 function Line() {
-  const [messages, setMessages] = useState([]);
+  const [massages, setMassages] = useState([]);
   useEffect(() => {
-    db.collection("messages")
-    .orderBy("createdAt")
-    .limit(50)
-    .onSnapshot((snapshot) => {
-      setMessages(snapshot.docs.map((doc) => doc.data()))
-    });
+    db.collection("massages")
+      .orderBy("createdAt")
+      .limit(50)
+      .onSnapshot((snapshot) => {
+        setMassages(snapshot.docs.map((doc) => doc.data()));
+      });
   }, []);
   return (
     <div>
-      {console.log(messages)}
+      {console.log(massages)}
       <SignOut />
       <div className='msgs'>
-        {messages.map(({id, text, photoURL, uid}) => {
+        {massages.map(({id, text, photoURL, uid}) => (
           <div>
-            <div key={id}>
+            <div key={id} className={`msg ${uid === auth.currentUser.uid ? "sent" : "received"}`}>
               <img src={photoURL} alt="" />
               <p>{text}</p>
             </div>
           </div>
-        })}
+        ))}
       </div>
+      <SendMessage />
     </div>
   )
 }
 
-export default Line
+export default Line;
